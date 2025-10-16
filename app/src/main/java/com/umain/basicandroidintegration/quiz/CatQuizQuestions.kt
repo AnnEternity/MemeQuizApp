@@ -1,4 +1,4 @@
-package com.umain.basicandroidintegration.detail
+package com.umain.basicandroidintegration.quiz
 
 enum class CatQuizQuestions {
     HAPPY,

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Basic Android Integration</string>
+    <string name="score">%1d/6</string>
 </resources>

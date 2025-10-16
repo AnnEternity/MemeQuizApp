@@ -1,6 +1,6 @@
 package com.umain.basicandroidintegration.presentation
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -10,23 +10,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umain.basicandroidintegration.R
 import com.umain.basicandroidintegration.presentation.MainViewEvent.ButtonOnClick
@@ -81,21 +81,22 @@ fun MainScreen(
             var clickedButton = value.isButtonOn
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 32.dp)
                     .statusBarsPadding(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
+                BasicText(
                     text = "Cats",
                     style = title1,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
+                    autoSize = TextAutoSize.StepBased(),
+                    modifier = Modifier,
+                    overflow = TextOverflow.Clip,
                 )
-                Text(
+                BasicText(
                     text = value.welcomeMessage,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Justify,
+                    autoSize = TextAutoSize.StepBased(maxFontSize = 32.sp),
+                    maxLines = 8,
                 )
                 OutlinedButton(
                     onClick = {
@@ -114,37 +115,41 @@ fun MainScreen(
                         style = subtitle
                     )
                 }
-
-                val animatedAlpha by animateFloatAsState(
-                    targetValue = if (value.isButtonOn) 1.0f else 0f,
-                    label = "alpha"
-                )
-                if (value.isButtonOn) {
-                    Image(
-                        painter = painterResource(R.drawable.funny_cat_image),
-                        contentDescription = "Funny cat",
-                    )
-                    OutlinedButton(
-                        onClick = onNavigate,
-                        colors = ButtonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black,
-                            disabledContainerColor = Color.White,
-                            disabledContentColor = Color.Black
-                        ),
-                        border = BorderStroke(0.5.dp, Color.LightGray)
+                AnimatedVisibility(value.isButtonOn) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Image(
-                                painter = painterResource(R.drawable.paw_icon),
-                                contentDescription = "Cat's paw"
-                            )
-                            Text(text = "Start quiz", style = subtitle)
+                        Image(
+                            painter = painterResource(R.drawable.funny_cat_image),
+                            contentDescription = "Funny cat",
+                            modifier = Modifier
+                                .animateEnterExit()
+                                .fillMaxWidth()
+                        )
+                        OutlinedButton(
+                            onClick = onNavigate,
+                            colors = ButtonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black,
+                                disabledContainerColor = Color.White,
+                                disabledContentColor = Color.Black
+                            ),
+                            border = BorderStroke(0.5.dp, Color.LightGray),
+                            modifier = Modifier.animateEnterExit()
+                        ) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Image(
+                                    painter = painterResource(R.drawable.paw_icon),
+                                    contentDescription = "Cat's paw"
+                                )
+                                Text(text = "Start quiz", style = subtitle)
+                            }
+
                         }
-
                     }
-                }
 
+                }
             }
         }
     }

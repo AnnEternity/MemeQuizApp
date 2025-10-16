@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.umain.basicandroidintegration.detail.DetailScreen
+import com.umain.basicandroidintegration.quiz.DetailScreen
 import com.umain.basicandroidintegration.presentation.MainScreen
 import com.umain.basicandroidintegration.ui.theme.BasicAndroidIntegrationTheme
 import kotlinx.serialization.Serializable
@@ -48,6 +48,7 @@ fun MainNavigation() {
         }
         composable<DetailScreen> {
             DetailScreen(
+                navigateToStart = {navController.popBackStack()}
             )
         }
     }

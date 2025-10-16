@@ -1,28 +1,28 @@
-package com.umain.basicandroidintegration.detail
+package com.umain.basicandroidintegration.quiz
 
 import com.umain.revolver.RevolverDefaultErrorHandler
 import com.umain.revolver.RevolverEffect
 import com.umain.revolver.RevolverViewModel
 
-class DetailViewModel : RevolverViewModel<DetailViewEvent, DetailViewState, RevolverEffect>(
-    initialState = DetailViewState.Loading
+class QuizViewModel : RevolverViewModel<QuizViewEvent, QuizViewState, RevolverEffect>(
+    initialState = QuizViewState.Loading
 ) {
     val listOfQuestions = CatQuizQuestions.entries
     var index: Int = 0
     var rightAnswerCounter = 0
 
     init {
-        addEventHandler<DetailViewEvent.ViewReady> { event, emit ->
+        addEventHandler<QuizViewEvent.ViewReady> { event, emit ->
             rightAnswerCounter = 0
             index = 0
             emit.state(
-                DetailViewState.Loaded(
+                QuizViewState.Loaded(
                     listOfQuestions[index],
                 )
             )
         }
 
-        addEventHandler<DetailViewEvent.YesAnswer> { event, emit ->
+        addEventHandler<QuizViewEvent.YesAnswer> { event, emit ->
             when (listOfQuestions.get(index)) {
                 CatQuizQuestions.POP,
                 CatQuizQuestions.MAX,
@@ -41,10 +41,10 @@ class DetailViewModel : RevolverViewModel<DetailViewEvent, DetailViewState, Revo
                     else -> CatQuizResults.Best
                 }
                 emit.state(
-                    DetailViewState.QuizEnd(result)
+                    QuizViewState.QuizEnd(result, rightAnswerCounter)
                 )
             } else {
-                val loadedState = state.value as DetailViewState.Loaded
+                val loadedState = state.value as QuizViewState.Loaded
                 emit.state(
                     loadedState.copy(
                         listOfQuestions[++index],
@@ -53,7 +53,7 @@ class DetailViewModel : RevolverViewModel<DetailViewEvent, DetailViewState, Revo
             }
         }
 
-        addEventHandler<DetailViewEvent.NoAnswer> { event, emit ->
+        addEventHandler<QuizViewEvent.NoAnswer> { event, emit ->
             when (listOfQuestions.get(index)) {
                 CatQuizQuestions.HUH,
                 CatQuizQuestions.CHIPICHAPA -> ++rightAnswerCounter
@@ -70,10 +70,10 @@ class DetailViewModel : RevolverViewModel<DetailViewEvent, DetailViewState, Revo
                     else -> CatQuizResults.Best
                 }
                 emit.state(
-                    DetailViewState.QuizEnd(result)
+                    QuizViewState.QuizEnd(result, rightAnswerCounter)
                 )
             } else {
-                val loadedState = state.value as DetailViewState.Loaded
+                val loadedState = state.value as QuizViewState.Loaded
                 emit.state(
                     loadedState.copy(
                         listOfQuestions[++index],
@@ -85,7 +85,7 @@ class DetailViewModel : RevolverViewModel<DetailViewEvent, DetailViewState, Revo
 
         addErrorHandler(
             RevolverDefaultErrorHandler(
-                DetailViewState.Error("Error message")
+                QuizViewState.Error("Error message")
             )
         )
     }

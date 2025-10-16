@@ -1,23 +1,24 @@
-package com.umain.basicandroidintegration.detail
+package com.umain.basicandroidintegration.quiz
 
 import com.umain.revolver.RevolverState
 
 /**
  * MainViewState defines all possible states that the ViewModel can emit to the UI.
  */
-sealed class DetailViewState : RevolverState {
+sealed class QuizViewState : RevolverState {
 
-    data object Loading : DetailViewState()
+    data object Loading : QuizViewState()
 
     data class Loaded(
         val question: CatQuizQuestions,
-        ) : DetailViewState()
+        ) : QuizViewState()
 
     data class QuizEnd(
         val result: CatQuizResults,
-    ): DetailViewState()
+        val score: Int,
+    ): QuizViewState()
 
     data class Error(
         val errorMessage: String
-    ) : DetailViewState()
+    ) : QuizViewState()
 }

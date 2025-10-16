@@ -1,4 +1,4 @@
-package com.umain.basicandroidintegration.detail
+package com.umain.basicandroidintegration.quiz
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -10,7 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
@@ -24,8 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umain.basicandroidintegration.R
 import com.umain.basicandroidintegration.presentation.MainViewState
@@ -36,12 +38,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
-    viewModel: DetailViewModel = viewModel(),
+    viewModel: QuizViewModel = viewModel(),
+    navigateToStart: () -> Unit
 ) {
     val uiState = remember { mutableStateOf(viewModel.state.value) }
 
     LaunchedEffect(key1 = true) {
-        viewModel.emit(DetailViewEvent.ViewReady)
+        viewModel.emit(QuizViewEvent.ViewReady)
         launch {
             viewModel.state.collect {
                 uiState.value = it
@@ -50,7 +53,7 @@ fun DetailScreen(
     }
 
     when (uiState.value) {
-        is DetailViewState.Error -> {
+        is QuizViewState.Error -> {
             val value = uiState.value as MainViewState.Error
             Text(
                 text = value.errorMessage,
@@ -61,8 +64,8 @@ fun DetailScreen(
             )
         }
 
-        is DetailViewState.Loaded -> {
-            val question = (uiState.value as DetailViewState.Loaded).question
+        is QuizViewState.Loaded -> {
+            val question = (uiState.value as QuizViewState.Loaded).question
             val (questionText, questionImage) = when (question) {
                 CatQuizQuestions.BBB -> "Is this the meme lord known as ЪYЪ?" to R.drawable.byb_cat
                 CatQuizQuestions.CHIPICHAPA -> "Is this our beloved CHIPI CHAPA?" to R.drawable.chipi_chapa_cat
@@ -73,21 +76,25 @@ fun DetailScreen(
             }
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 32.dp)
                     .statusBarsPadding()
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
+                BasicText(
                     text = "Big cat test",
                     style = title1,
-                    textAlign = TextAlign.Center,
+                    //textAlign = TextAlign.Center,
+                    autoSize = TextAutoSize.StepBased(),
+                    maxLines = 1,
                 )
-                Text(
+                BasicText(
                     text = questionText,
                     style = subtitle,
-                    textAlign = TextAlign.Center,
+                    //textAlign = TextAlign.Center,
+                    autoSize = TextAutoSize.StepBased(maxFontSize = 52.sp),
+                    maxLines = 1,
                 )
                 Image(
                     painter = painterResource(questionImage),
@@ -97,7 +104,7 @@ fun DetailScreen(
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
                     OutlinedButton(
-                        onClick = { viewModel.emit(DetailViewEvent.YesAnswer) },
+                        onClick = { viewModel.emit(QuizViewEvent.YesAnswer) },
                         colors = ButtonColors(
                             containerColor = Color.White,
                             contentColor = Color.Black,
@@ -117,7 +124,7 @@ fun DetailScreen(
                     }
                     OutlinedButton(
                         onClick = {
-                            viewModel.emit(DetailViewEvent.NoAnswer)
+                            viewModel.emit(QuizViewEvent.NoAnswer)
                         },
                         colors = ButtonColors(
                             containerColor = Color.White,
@@ -142,7 +149,7 @@ fun DetailScreen(
             }
         }
 
-        is DetailViewState.Loading -> {
+        is QuizViewState.Loading -> {
             Row(
                 modifier = modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -152,8 +159,9 @@ fun DetailScreen(
             }
         }
 
-        is DetailViewState.QuizEnd -> {
-            val result = (uiState.value as DetailViewState.QuizEnd).result
+        is QuizViewState.QuizEnd -> {
+            val result = (uiState.value as QuizViewState.QuizEnd).result
+            val score = (uiState.value as QuizViewState.QuizEnd).score
             val (text, image) = when (result) {
                 CatQuizResults.NotACat -> "Lost..." to R.drawable.not_a_cat
                 CatQuizResults.LittleBit -> "Confused kitten" to R.drawable.little_bit
@@ -164,23 +172,33 @@ fun DetailScreen(
             }
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
                     .statusBarsPadding()
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = text, style = title1, textAlign = TextAlign.Center)
+                BasicText(
+                    text = text,
+                    style = title1,
+                    autoSize = TextAutoSize.StepBased(),
+                    maxLines = 1,
+                )
+                BasicText(
+                    text = stringResource(R.string.score, score),
+                    style = subtitle,
+                    //textAlign = TextAlign.Center,
+                    autoSize = TextAutoSize.StepBased(maxFontSize = 48.sp),
+                    maxLines = 1,
+                )
                 Image(
                     painter = painterResource(image),
-                    contentDescription = "",
+                    contentDescription = text,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(350.dp)
+                    modifier = Modifier.size(350.dp),
                 )
                 OutlinedButton(
-                    onClick = {
-                        viewModel.emit(DetailViewEvent.ViewReady)
-                    },
+                    onClick = navigateToStart,
                     colors = ButtonColors(
                         containerColor = Color.White,
                         contentColor = Color.Black,
@@ -196,7 +214,6 @@ fun DetailScreen(
                         )
                         Text(text = "One more time?", style = subtitle)
                     }
-
                 }
             }
         }
