@@ -1,0 +1,33 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/apegroup/revolver/")
+            content {
+                includeGroup("com.umain")
+            }
+            credentials {
+                username = "anna_vechkanova"
+                password = "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"
+            }
+        }
+    }
+}
+
+rootProject.name = "Basic Android Integration"
+include(":app")
