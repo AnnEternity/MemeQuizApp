@@ -31,12 +31,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umain.basicandroidintegration.R
 import com.umain.basicandroidintegration.presentation.MainViewState
+import com.umain.basicandroidintegration.quiz.cat.image
+import com.umain.basicandroidintegration.quiz.cat.questionImage
+import com.umain.basicandroidintegration.quiz.cat.questionText
+import com.umain.basicandroidintegration.quiz.cat.text
 import com.umain.basicandroidintegration.ui.theme.subtitle
 import com.umain.basicandroidintegration.ui.theme.title1
 import kotlinx.coroutines.launch
 
 @Composable
-fun DetailScreen(
+fun QuizScreen(
     modifier: Modifier = Modifier,
     viewModel: QuizViewModel = viewModel(),
     navigateToStart: () -> Unit
@@ -66,14 +70,6 @@ fun DetailScreen(
 
         is QuizViewState.Loaded -> {
             val question = (uiState.value as QuizViewState.Loaded).question
-            val (questionText, questionImage) = when (question) {
-                CatQuizQuestions.BBB -> "Is this the meme lord known as ЪYЪ?" to R.drawable.byb_cat
-                CatQuizQuestions.CHIPICHAPA -> "Is this our beloved CHIPI CHAPA?" to R.drawable.chipi_chapa_cat
-                CatQuizQuestions.HUH -> "Is this the legendary HUH cat?" to R.drawable.huh_cat
-                CatQuizQuestions.MAX -> "Is this Max - the cat who's seen things?" to R.drawable.maxwell_cat
-                CatQuizQuestions.HAPPY -> "Does this cat give off happy vibes?" to R.drawable.happy_cat
-                CatQuizQuestions.POP -> "Be honest - is that POP cat?" to R.drawable.pop_cat
-            }
             Column(
                 modifier = Modifier
                     .padding(horizontal = 32.dp)
@@ -90,14 +86,14 @@ fun DetailScreen(
                     maxLines = 1,
                 )
                 BasicText(
-                    text = questionText,
+                    text = question.questionText,
                     style = subtitle,
                     //textAlign = TextAlign.Center,
                     autoSize = TextAutoSize.StepBased(maxFontSize = 52.sp),
                     maxLines = 1,
                 )
                 Image(
-                    painter = painterResource(questionImage),
+                    painter = painterResource(question.questionImage),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(350.dp),
@@ -162,14 +158,6 @@ fun DetailScreen(
         is QuizViewState.QuizEnd -> {
             val result = (uiState.value as QuizViewState.QuizEnd).result
             val score = (uiState.value as QuizViewState.QuizEnd).score
-            val (text, image) = when (result) {
-                CatQuizResults.NotACat -> "Lost..." to R.drawable.not_a_cat
-                CatQuizResults.LittleBit -> "Confused kitten" to R.drawable.little_bit
-                CatQuizResults.MediumCat -> "Casual Cat scroller" to R.drawable.medium_cat
-                CatQuizResults.BetterThanHalf -> "Meme pawprentice" to R.drawable.better_than_half
-                CatQuizResults.BigCat -> "Certified Cat Meme Connoisseur!" to R.drawable.big_cat
-                CatQuizResults.Best -> "The chosen Meow!" to R.drawable.best_cat
-            }
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -179,7 +167,7 @@ fun DetailScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 BasicText(
-                    text = text,
+                    text = result.text,
                     style = title1,
                     autoSize = TextAutoSize.StepBased(),
                     maxLines = 1,
@@ -192,8 +180,8 @@ fun DetailScreen(
                     maxLines = 1,
                 )
                 Image(
-                    painter = painterResource(image),
-                    contentDescription = text,
+                    painter = painterResource(result.image),
+                    contentDescription = result.text,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(350.dp),
                 )

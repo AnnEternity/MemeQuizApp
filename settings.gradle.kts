@@ -22,8 +22,8 @@ dependencyResolutionManagement {
                 includeGroup("com.umain")
             }
             credentials {
-                username = "anna_vechkanova"
-                password = "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"
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_PASSWORD")
             }
         }
     }

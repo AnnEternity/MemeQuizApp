@@ -1,5 +1,7 @@
 package com.umain.basicandroidintegration.quiz
 
+import com.umain.basicandroidintegration.quiz.cat.CatQuizQuestions
+import com.umain.basicandroidintegration.quiz.cat.CatQuizResults
 import com.umain.revolver.RevolverState
 
 /**

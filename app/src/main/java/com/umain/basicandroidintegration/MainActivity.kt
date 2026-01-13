@@ -8,8 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.umain.basicandroidintegration.quiz.DetailScreen
-import com.umain.basicandroidintegration.presentation.MainScreen
+import com.umain.basicandroidintegration.main.MainQuizScreen
+import com.umain.basicandroidintegration.main.QuizTheme
+import com.umain.basicandroidintegration.quiz.QuizScreen
 import com.umain.basicandroidintegration.ui.theme.BasicAndroidIntegrationTheme
 import kotlinx.serialization.Serializable
 
@@ -27,27 +28,27 @@ class MainActivity : ComponentActivity() {
 }
 
 @Serializable
-object MainScreen
+object MainQuizScreen
 
 @Serializable
-object DetailScreen
+data class DetailScreen(val theme: QuizTheme)
 
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = MainScreen,
+        startDestination = MainQuizScreen,
     ) {
-        composable<MainScreen> {
-            MainScreen(
+        composable<MainQuizScreen> {
+            MainQuizScreen(
                 onNavigate = {
-                    navController.navigate(route = DetailScreen)
+                    navController.navigate(route = DetailScreen(it))
                 }
             )
         }
         composable<DetailScreen> {
-            DetailScreen(
+            QuizScreen(
                 navigateToStart = {navController.popBackStack()}
             )
         }

@@ -26,3 +26,11 @@ val subtitle = TextStyle(
     lineHeight = 18.sp,
     letterSpacing = 0.sp,
 )
+
+val text = TextStyle(
+    fontFamily = jura,
+    fontWeight = FontWeight.W500,
+    fontSize = 32.sp,
+    lineHeight = 32.sp,
+    letterSpacing = 0.sp,
+)

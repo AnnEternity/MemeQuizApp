@@ -1,13 +1,27 @@
 package com.umain.basicandroidintegration.quiz
 
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
+import com.umain.basicandroidintegration.DetailScreen
+import com.umain.basicandroidintegration.main.QuizTheme
+import com.umain.basicandroidintegration.quiz.cat.CatQuizQuestions
+import com.umain.basicandroidintegration.quiz.cat.CatQuizResults
+import com.umain.basicandroidintegration.quiz.cat.isAnswerYes
 import com.umain.revolver.RevolverDefaultErrorHandler
 import com.umain.revolver.RevolverEffect
 import com.umain.revolver.RevolverViewModel
 
-class QuizViewModel : RevolverViewModel<QuizViewEvent, QuizViewState, RevolverEffect>(
-    initialState = QuizViewState.Loading
-) {
-    val listOfQuestions = CatQuizQuestions.entries
+class QuizViewModel(savedStateHandle: SavedStateHandle) :
+    RevolverViewModel<QuizViewEvent, QuizViewState, RevolverEffect>(
+        initialState = QuizViewState.Loading
+    ) {
+    val route = savedStateHandle.toRoute<DetailScreen>()
+    val theme = route.theme
+    val listOfQuestions = when(theme){
+        QuizTheme.Cat -> CatQuizQuestions.entries
+        QuizTheme.Dog -> TODO()
+        QuizTheme.Mixed -> TODO()
+    }
     var index: Int = 0
     var rightAnswerCounter = 0
 
@@ -23,13 +37,8 @@ class QuizViewModel : RevolverViewModel<QuizViewEvent, QuizViewState, RevolverEf
         }
 
         addEventHandler<QuizViewEvent.YesAnswer> { event, emit ->
-            when (listOfQuestions.get(index)) {
-                CatQuizQuestions.POP,
-                CatQuizQuestions.MAX,
-                CatQuizQuestions.HAPPY,
-                CatQuizQuestions.BBB -> ++rightAnswerCounter
-
-                else -> Unit
+            if (listOfQuestions.get(index).isAnswerYes) {
+                 ++rightAnswerCounter
             }
             if (index == listOfQuestions.lastIndex) {
                 val result = when (rightAnswerCounter) {
@@ -57,6 +66,7 @@ class QuizViewModel : RevolverViewModel<QuizViewEvent, QuizViewState, RevolverEf
             when (listOfQuestions.get(index)) {
                 CatQuizQuestions.HUH,
                 CatQuizQuestions.CHIPICHAPA -> ++rightAnswerCounter
+
                 else -> Unit
             }
             if (index == listOfQuestions.lastIndex) {
