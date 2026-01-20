@@ -19,8 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,39 +27,29 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umain.basicandroidintegration.R
-import com.umain.basicandroidintegration.presentation.MainViewEvent
-import com.umain.basicandroidintegration.presentation.MainViewModel
-import com.umain.basicandroidintegration.presentation.MainViewState
 import com.umain.basicandroidintegration.ui.theme.text
 import com.umain.basicandroidintegration.ui.theme.title1
-import kotlinx.coroutines.launch
 
 @Composable
 fun MainQuizScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = viewModel(),
+    viewModel: MainQuizViewModel = viewModel(),
     onNavigate: (QuizTheme) -> Unit
 ) {
     // Local UI state that tracks ViewModel's current state
-    val uiState = remember { mutableStateOf(viewModel.state.value) }
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = true) {
-
-        viewModel.emit(MainViewEvent.ViewReady)
-
-        launch {
-            viewModel.state.collect {
-                uiState.value = it
-            }
-        }
+        viewModel.emit(MainQuizViewEvent.ViewReady)
     }
-    when (uiState.value) {
-        is MainViewState.Error -> {
-            val value = uiState.value as MainViewState.Error
+
+    when (val currentUiState = uiState) {
+        is MainQuizViewState.Error -> {
             Text(
-                text = value.errorMessage,
+                text = currentUiState.errorMessage,
                 color = Color.Red,
                 modifier = modifier
                     .fillMaxSize()
@@ -68,7 +57,7 @@ fun MainQuizScreen(
             )
         }
 
-        is MainViewState.Loading -> {
+        is MainQuizViewState.Loading -> {
             Row(
                 modifier = modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -79,8 +68,7 @@ fun MainQuizScreen(
         }
 
         // Main screen
-        is MainViewState.Loaded -> {
-            val value = uiState.value as MainViewState.Loaded
+        is MainQuizViewState.Loaded -> {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -114,7 +102,11 @@ fun MainQuizScreen(
                                     contentScale = ContentScale.Crop,
                                     contentDescription = "${it.name} quiz image"
                                 )
-                                Text(text = it.name, style = text)
+                                Text(
+                                    text = it.name,
+                                    style = text,
+                                    modifier = Modifier.padding(8.dp)
+                                )
                             }
                         }
                     }
@@ -127,7 +119,7 @@ fun MainQuizScreen(
 
 val QuizTheme.image: Int
     get() = when (this) {
-        QuizTheme.Cat -> R.drawable.cat_quiz
-        QuizTheme.Dog -> R.drawable.dog_quiz
-        QuizTheme.Mixed -> R.drawable.mix_quiz
+        QuizTheme.Cats -> R.drawable.cat_quiz
+        QuizTheme.Dogs -> R.drawable.dog_quiz
+        //QuizTheme.Mixed -> R.drawable.mix_quiz
     }

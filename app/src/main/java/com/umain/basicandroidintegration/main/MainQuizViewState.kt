@@ -23,7 +23,6 @@ sealed class MainQuizViewState : RevolverState {
      * this example it is [MainQuizViewEvent.ViewReady].
      */
     data class Loaded(
-        val welcomeMessage: String,
         var isButtonOn: Boolean,
 
         ) : MainQuizViewState()

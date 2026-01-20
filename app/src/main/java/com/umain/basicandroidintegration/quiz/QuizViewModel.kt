@@ -4,9 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.umain.basicandroidintegration.DetailScreen
 import com.umain.basicandroidintegration.main.QuizTheme
-import com.umain.basicandroidintegration.quiz.cat.CatQuizQuestions
-import com.umain.basicandroidintegration.quiz.cat.CatQuizResults
-import com.umain.basicandroidintegration.quiz.cat.isAnswerYes
+import com.umain.basicandroidintegration.quiz.data.CatQuizQuestions
+import com.umain.basicandroidintegration.quiz.data.CatQuizResult
+import com.umain.basicandroidintegration.quiz.data.DogQuizQuestions
+import com.umain.basicandroidintegration.quiz.data.DogQuizResult
+import com.umain.basicandroidintegration.quiz.data.QuizQuestion
+import com.umain.basicandroidintegration.quiz.data.QuizResult
+import com.umain.basicandroidintegration.quiz.data.isAnswerYes
 import com.umain.revolver.RevolverDefaultErrorHandler
 import com.umain.revolver.RevolverEffect
 import com.umain.revolver.RevolverViewModel
@@ -17,10 +21,15 @@ class QuizViewModel(savedStateHandle: SavedStateHandle) :
     ) {
     val route = savedStateHandle.toRoute<DetailScreen>()
     val theme = route.theme
-    val listOfQuestions = when(theme){
-        QuizTheme.Cat -> CatQuizQuestions.entries
-        QuizTheme.Dog -> TODO()
-        QuizTheme.Mixed -> TODO()
+    val listOfQuestions: List<QuizQuestion> = when (theme) {
+        QuizTheme.Cats -> CatQuizQuestions.entries.toList()
+        QuizTheme.Dogs -> DogQuizQuestions.entries.toList()
+        //QuizTheme.Mixed -> MixedQuizQuestions.entries.toList()
+    }
+    val listOfResultText: List<QuizResult> = when (theme) {
+        QuizTheme.Cats -> CatQuizResult.entries.toList()
+        QuizTheme.Dogs -> DogQuizResult.entries.toList()
+        //QuizTheme.Mixed -> MixedQuizResult.entries.toList()
     }
     var index: Int = 0
     var rightAnswerCounter = 0
@@ -32,25 +41,19 @@ class QuizViewModel(savedStateHandle: SavedStateHandle) :
             emit.state(
                 QuizViewState.Loaded(
                     listOfQuestions[index],
+                    theme.name,
                 )
             )
         }
 
         addEventHandler<QuizViewEvent.YesAnswer> { event, emit ->
-            if (listOfQuestions.get(index).isAnswerYes) {
-                 ++rightAnswerCounter
+            if (listOfQuestions[index].isAnswerYes) {
+                ++rightAnswerCounter
             }
             if (index == listOfQuestions.lastIndex) {
-                val result = when (rightAnswerCounter) {
-                    0 -> CatQuizResults.NotACat
-                    1 -> CatQuizResults.LittleBit
-                    2 -> CatQuizResults.MediumCat
-                    3 -> CatQuizResults.BetterThanHalf
-                    4 -> CatQuizResults.BigCat
-                    else -> CatQuizResults.Best
-                }
+                val result = listOfResultText[rightAnswerCounter]
                 emit.state(
-                    QuizViewState.QuizEnd(result, rightAnswerCounter)
+                    QuizViewState.QuizEnd(result, rightAnswerCounter, listOfQuestions.size)
                 )
             } else {
                 val loadedState = state.value as QuizViewState.Loaded
@@ -63,24 +66,13 @@ class QuizViewModel(savedStateHandle: SavedStateHandle) :
         }
 
         addEventHandler<QuizViewEvent.NoAnswer> { event, emit ->
-            when (listOfQuestions.get(index)) {
-                CatQuizQuestions.HUH,
-                CatQuizQuestions.CHIPICHAPA -> ++rightAnswerCounter
-
-                else -> Unit
+            if (!listOfQuestions[index].isAnswerYes) {
+                ++rightAnswerCounter
             }
             if (index == listOfQuestions.lastIndex) {
-                val result = when (rightAnswerCounter) {
-                    0 -> CatQuizResults.NotACat
-                    1 -> CatQuizResults.LittleBit
-                    2 -> CatQuizResults.LittleBit
-                    3 -> CatQuizResults.MediumCat
-                    4 -> CatQuizResults.BetterThanHalf
-                    5 -> CatQuizResults.BigCat
-                    else -> CatQuizResults.Best
-                }
+                val result = listOfResultText[rightAnswerCounter]
                 emit.state(
-                    QuizViewState.QuizEnd(result, rightAnswerCounter)
+                    QuizViewState.QuizEnd(result, rightAnswerCounter, listOfQuestions.size)
                 )
             } else {
                 val loadedState = state.value as QuizViewState.Loaded
@@ -92,13 +84,10 @@ class QuizViewModel(savedStateHandle: SavedStateHandle) :
             }
         }
 
-
         addErrorHandler(
             RevolverDefaultErrorHandler(
                 QuizViewState.Error("Error message")
             )
         )
     }
-
-
 }

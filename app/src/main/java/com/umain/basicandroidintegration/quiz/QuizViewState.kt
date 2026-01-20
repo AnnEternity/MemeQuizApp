@@ -1,7 +1,7 @@
 package com.umain.basicandroidintegration.quiz
 
-import com.umain.basicandroidintegration.quiz.cat.CatQuizQuestions
-import com.umain.basicandroidintegration.quiz.cat.CatQuizResults
+import com.umain.basicandroidintegration.quiz.data.QuizQuestion
+import com.umain.basicandroidintegration.quiz.data.QuizResult
 import com.umain.revolver.RevolverState
 
 /**
@@ -12,12 +12,14 @@ sealed class QuizViewState : RevolverState {
     data object Loading : QuizViewState()
 
     data class Loaded(
-        val question: CatQuizQuestions,
+        val question: QuizQuestion,
+        val themeText: String,
         ) : QuizViewState()
 
     data class QuizEnd(
-        val result: CatQuizResults,
+        val result: QuizResult,
         val score: Int,
+        val numberOfQuestions: Int,
     ): QuizViewState()
 
     data class Error(

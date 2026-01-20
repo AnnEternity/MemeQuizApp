@@ -7,7 +7,6 @@ import com.umain.revolver.RevolverEvent
  * When the ViewModel receives an event, it processes one and emits a new state (one of MainViewState).
  */
 sealed class QuizViewEvent : RevolverEvent {
-
     data object ViewReady : QuizViewEvent()
     data object YesAnswer: QuizViewEvent()
     data object NoAnswer: QuizViewEvent()

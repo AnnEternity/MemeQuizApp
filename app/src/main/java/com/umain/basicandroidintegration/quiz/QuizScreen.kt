@@ -18,8 +18,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,16 +27,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umain.basicandroidintegration.R
-import com.umain.basicandroidintegration.presentation.MainViewState
-import com.umain.basicandroidintegration.quiz.cat.image
-import com.umain.basicandroidintegration.quiz.cat.questionImage
-import com.umain.basicandroidintegration.quiz.cat.questionText
-import com.umain.basicandroidintegration.quiz.cat.text
+import com.umain.basicandroidintegration.quiz.data.image
+import com.umain.basicandroidintegration.quiz.data.questionImage
+import com.umain.basicandroidintegration.quiz.data.questionText
+import com.umain.basicandroidintegration.quiz.data.resultText
 import com.umain.basicandroidintegration.ui.theme.subtitle
 import com.umain.basicandroidintegration.ui.theme.title1
-import kotlinx.coroutines.launch
 
 @Composable
 fun QuizScreen(
@@ -45,22 +43,16 @@ fun QuizScreen(
     viewModel: QuizViewModel = viewModel(),
     navigateToStart: () -> Unit
 ) {
-    val uiState = remember { mutableStateOf(viewModel.state.value) }
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = true) {
         viewModel.emit(QuizViewEvent.ViewReady)
-        launch {
-            viewModel.state.collect {
-                uiState.value = it
-            }
-        }
     }
 
-    when (uiState.value) {
+    when (val currentUiState = uiState) {
         is QuizViewState.Error -> {
-            val value = uiState.value as MainViewState.Error
             Text(
-                text = value.errorMessage,
+                text = currentUiState.errorMessage,
                 color = Color.Red,
                 modifier = modifier
                     .fillMaxSize()
@@ -69,7 +61,7 @@ fun QuizScreen(
         }
 
         is QuizViewState.Loaded -> {
-            val question = (uiState.value as QuizViewState.Loaded).question
+            val question = currentUiState.question
             Column(
                 modifier = Modifier
                     .padding(horizontal = 32.dp)
@@ -79,16 +71,14 @@ fun QuizScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 BasicText(
-                    text = "Big cat test",
+                    text = "${currentUiState.themeText} quiz",
                     style = title1,
-                    //textAlign = TextAlign.Center,
                     autoSize = TextAutoSize.StepBased(),
                     maxLines = 1,
                 )
                 BasicText(
                     text = question.questionText,
                     style = subtitle,
-                    //textAlign = TextAlign.Center,
                     autoSize = TextAutoSize.StepBased(maxFontSize = 52.sp),
                     maxLines = 1,
                 )
@@ -99,46 +89,16 @@ fun QuizScreen(
                     modifier = Modifier.size(350.dp),
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                    OutlinedButton(
-                        onClick = { viewModel.emit(QuizViewEvent.YesAnswer) },
-                        colors = ButtonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black,
-                            disabledContainerColor = Color.White,
-                            disabledContentColor = Color.Black
-                        ),
-                        border = BorderStroke(0.5.dp, Color.LightGray)
-                    ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Image(
-                                painter = painterResource(R.drawable.paw_icon),
-                                contentDescription = "Cat's paw"
-                            )
-                            Text(text = "Yes", style = subtitle)
-                        }
-
-                    }
-                    OutlinedButton(
-                        onClick = {
-                            viewModel.emit(QuizViewEvent.NoAnswer)
-                        },
-                        colors = ButtonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black,
-                            disabledContainerColor = Color.White,
-                            disabledContentColor = Color.Black
-                        ),
-                        border = BorderStroke(0.5.dp, Color.LightGray)
-                    ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Image(
-                                painter = painterResource(R.drawable.paw_icon_dark),
-                                contentDescription = "Cat's paw"
-                            )
-                            Text(text = "No", style = subtitle)
-                        }
-
-                    }
+                    Button(
+                        { viewModel.emit(QuizViewEvent.YesAnswer) },
+                        "yes",
+                        R.drawable.paw_icon,
+                    )
+                    Button(
+                        { viewModel.emit(QuizViewEvent.NoAnswer) },
+                        "no",
+                        R.drawable.paw_icon_dark,
+                    )
                 }
 
 
@@ -156,8 +116,9 @@ fun QuizScreen(
         }
 
         is QuizViewState.QuizEnd -> {
-            val result = (uiState.value as QuizViewState.QuizEnd).result
-            val score = (uiState.value as QuizViewState.QuizEnd).score
+            val result = currentUiState.result
+            val score = currentUiState.score
+            val numberOfQuestions = currentUiState.numberOfQuestions
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -167,44 +128,48 @@ fun QuizScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 BasicText(
-                    text = result.text,
+                    text = result.resultText,
                     style = title1,
                     autoSize = TextAutoSize.StepBased(),
                     maxLines = 1,
                 )
                 BasicText(
-                    text = stringResource(R.string.score, score),
+                    text = stringResource(R.string.score, score, numberOfQuestions),
                     style = subtitle,
-                    //textAlign = TextAlign.Center,
                     autoSize = TextAutoSize.StepBased(maxFontSize = 48.sp),
                     maxLines = 1,
                 )
                 Image(
                     painter = painterResource(result.image),
-                    contentDescription = result.text,
+                    contentDescription = result.resultText,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(350.dp),
                 )
-                OutlinedButton(
-                    onClick = navigateToStart,
-                    colors = ButtonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black,
-                        disabledContainerColor = Color.White,
-                        disabledContentColor = Color.Black
-                    ),
-                    border = BorderStroke(0.5.dp, Color.LightGray)
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Image(
-                            painter = painterResource(R.drawable.paw_icon),
-                            contentDescription = "Cat's paw"
-                        )
-                        Text(text = "One more time?", style = subtitle)
-                    }
-                }
+                Button(navigateToStart, "One more time?", R.drawable.paw_icon)
             }
         }
 
+    }
+}
+
+@Composable
+private fun Button(onClick: () -> Unit, text: String, icon: Int) {
+    OutlinedButton(
+        onClick = onClick,
+        colors = ButtonColors(
+            containerColor = Color.White,
+            contentColor = Color.Black,
+            disabledContainerColor = Color.White,
+            disabledContentColor = Color.Black
+        ),
+        border = BorderStroke(0.5.dp, Color.LightGray)
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Image(
+                painter = painterResource(icon),
+                contentDescription = "Cat's paw"
+            )
+            Text(text = text, style = subtitle)
+        }
     }
 }

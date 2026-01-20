@@ -29,7 +29,6 @@ class MainQuizViewModel : RevolverViewModel<MainQuizViewEvent, MainQuizViewState
 
             emit.state(
                 MainQuizViewState.Loaded(
-                    "Cats are among the world's most beloved pets, and for good reason. These remarkable creatures have been living alongside humans for thousands of years, originally domesticated around 9,000 years ago in the Near East.",
                     isButtonOn = false,
                 )
             )
