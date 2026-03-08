@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -63,6 +64,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.revolver)
     implementation(libs.androidx.navigation.compose)
+    implementation(platform(libs.firebase))
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,5 +1,6 @@
 package com.umain.basicandroidintegration.main
 
+import com.umain.basicandroidintegration.storage.Score
 import com.umain.revolver.RevolverState
 
 /**
@@ -24,7 +25,7 @@ sealed class MainQuizViewState : RevolverState {
      */
     data class Loaded(
         var isButtonOn: Boolean,
-
+        var score: List<Score>,
         ) : MainQuizViewState()
 
     /**

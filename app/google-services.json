@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "882065418860",
+    "project_id": "memequizapp-a4ab1",
+    "storage_bucket": "memequizapp-a4ab1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882065418860:android:8ab26eb150b299826a4649",
+        "android_client_info": {
+          "package_name": "com.umain.basicandroidintegration"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnKPVpIc4WzhKbp88Ar3BwwRs92ZjgxQI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

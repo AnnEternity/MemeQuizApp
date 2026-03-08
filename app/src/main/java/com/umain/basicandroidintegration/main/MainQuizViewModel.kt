@@ -1,35 +1,31 @@
 package com.umain.basicandroidintegration.main
 
+import com.umain.basicandroidintegration.storage.LeaderBoardStorage
+import com.umain.basicandroidintegration.storage.LeaderBoardStorageImpl
 import com.umain.revolver.RevolverDefaultErrorHandler
 import com.umain.revolver.RevolverEffect
 import com.umain.revolver.RevolverViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Basic implementation of RevolverViewModel capable of handling events,
  * managing errors, and emitting states.
  */
-class MainQuizViewModel : RevolverViewModel<MainQuizViewEvent, MainQuizViewState, RevolverEffect>(
-    initialState = MainQuizViewState.Loading
-) {
+class MainQuizViewModel(private val leaderBoardStorage: LeaderBoardStorage = LeaderBoardStorageImpl()) :
+    RevolverViewModel<MainQuizViewEvent, MainQuizViewState, RevolverEffect>(initialState = MainQuizViewState.Loading) {
+
     init {
-        /**
-         * Sets up the event handler for ViewReady, the only defined event for this ViewModel.
-         */
+        viewModelScope.launch {
+            leaderBoardStorage.scores.collect {scores ->
+                emit(MainQuizViewEvent.ScoresRefreshed(scores))
+            }
+        }
+
         addEventHandler<MainQuizViewEvent.ViewReady> { event, emit ->
-            //val parameters = event.parameters
-            /**
-             * Delay here is just to show loading state and make state changes visible.
-             */
-            //delay(1000)
-
-            /**
-             * If you want to trigger error handler then uncomment below line.
-             */
-            // throw Exception("Custom error message")
-
             emit.state(
                 MainQuizViewState.Loaded(
                     isButtonOn = false,
+                    score = emptyList(),
                 )
             )
         }
@@ -39,7 +35,16 @@ class MainQuizViewModel : RevolverViewModel<MainQuizViewEvent, MainQuizViewState
             emit.state(
                 loadedState.copy(
                     isButtonOn = isButtonOn,
-                    )
+                )
+            )
+        }
+        addEventHandler<MainQuizViewEvent.ScoresRefreshed> { event, emit ->
+            val score = event.score
+            val loadedState = state.value as MainQuizViewState.Loaded
+            emit.state(
+                loadedState.copy(
+                    score = score
+                )
             )
         }
         /**

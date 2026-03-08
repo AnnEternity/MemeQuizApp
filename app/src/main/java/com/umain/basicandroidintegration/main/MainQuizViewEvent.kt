@@ -1,5 +1,6 @@
 package com.umain.basicandroidintegration.main
 
+import com.umain.basicandroidintegration.storage.Score
 import com.umain.revolver.RevolverEvent
 
 /**
@@ -15,4 +16,5 @@ sealed class MainQuizViewEvent : RevolverEvent {
      */
     data object ViewReady : MainQuizViewEvent()
     data class ButtonOnClick( val isClicked: Boolean) : MainQuizViewEvent()
+    data class ScoresRefreshed(val score: List<Score>) : MainQuizViewEvent()
 }
