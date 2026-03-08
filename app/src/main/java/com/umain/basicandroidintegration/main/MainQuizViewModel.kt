@@ -5,7 +5,9 @@ import com.umain.basicandroidintegration.storage.LeaderBoardStorageImpl
 import com.umain.revolver.RevolverDefaultErrorHandler
 import com.umain.revolver.RevolverEffect
 import com.umain.revolver.RevolverViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -13,29 +15,36 @@ import kotlinx.coroutines.launch
  * managing errors, and emitting states.
  */
 class MainQuizViewModel(
-    private val leaderBoardStorage: LeaderBoardStorage = LeaderBoardStorageImpl(),
+    leaderBoardStorage: LeaderBoardStorage = LeaderBoardStorageImpl(),
 ) : RevolverViewModel<MainQuizViewEvent, MainQuizViewState, RevolverEffect>(initialState = MainQuizViewState.Loading) {
+    private val scoresState =
+        leaderBoardStorage.scores
+            .map { scores ->
+                scores.sortedByDescending {
+                    if (it.maxPossible == 0) {
+                        0.0
+                    } else {
+                        it.score.toDouble() / it.maxPossible
+                    }
+                }
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = emptyList(),
+            )
+
     init {
         viewModelScope.launch {
-            leaderBoardStorage.scores
-                .map { scores ->
-                    scores.sortedByDescending {
-                        if (it.maxPossible == 0) {
-                            0.0
-                        } else {
-                            it.score.toDouble() / it.maxPossible
-                        }
-                    }
-                }.collect { scores ->
-                    emit(MainQuizViewEvent.ScoresRefreshed(scores))
-                }
+            scoresState.collect { scores ->
+                emit(MainQuizViewEvent.ScoresRefreshed(scores))
+            }
         }
 
         addEventHandler<MainQuizViewEvent.ViewReady> { event, emit ->
             emit.state(
                 MainQuizViewState.Loaded(
                     isButtonOn = false,
-                    score = emptyList(),
+                    score = scoresState.value,
                 ),
             )
         }
