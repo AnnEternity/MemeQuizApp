@@ -22,4 +22,6 @@ sealed class QuizViewEvent : RevolverEvent {
     data class NameDialogSaveClick(
         val finalName: String,
     ) : QuizViewEvent()
+
+    data object ConfettiAnimationComplete : QuizViewEvent()
 }

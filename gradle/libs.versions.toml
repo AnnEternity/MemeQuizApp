@@ -13,6 +13,7 @@ navigationCompose = "2.9.5"
 kotlinSerialization = "2.1.21"
 google-services = "4.4.4"
 firebase = "34.8.0"
+lottieCompose = "6.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +34,7 @@ revolver = { module = "com.umain:revolver", version.ref = "revolver" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 firebase = {module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
 firebase-firestore = {module = "com.google.firebase:firebase-firestore"}
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

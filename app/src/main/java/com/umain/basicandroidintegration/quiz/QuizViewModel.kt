@@ -87,6 +87,10 @@ class QuizViewModel(
             dismissNameDialog(emit)
         }
 
+        addEventHandler<QuizViewEvent.ConfettiAnimationComplete> { event, emit ->
+            emitNextQuizState(emit)
+        }
+
         addErrorHandler(
             RevolverDefaultErrorHandler(
                 QuizViewState.Error("Error message"),
@@ -121,7 +125,14 @@ class QuizViewModel(
     ) {
         if (isAnswerCorrect) {
             ++rightAnswerCounter
+            val loadedState = state.value as QuizViewState.Loaded
+            emit.state(loadedState.copy(showConfetti = true))
+        } else {
+            emitNextQuizState(emit)
         }
+    }
+
+    private fun emitNextQuizState(emit: Emitter<QuizViewState, RevolverEffect>) {
         if (index == listOfQuestions.lastIndex) {
             val result = listOfResultText[rightAnswerCounter]
             emit.state(
@@ -138,6 +149,7 @@ class QuizViewModel(
             emit.state(
                 loadedState.copy(
                     question = listOfQuestions[++index],
+                    showConfetti = false,
                 ),
             )
         }

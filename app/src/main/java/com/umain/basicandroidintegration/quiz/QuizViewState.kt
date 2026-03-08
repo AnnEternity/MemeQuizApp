@@ -13,6 +13,7 @@ sealed class QuizViewState : RevolverState {
     data class Loaded(
         val question: QuizQuestion,
         val themeText: String,
+        val showConfetti: Boolean = false,
     ) : QuizViewState()
 
     data class QuizEnd(

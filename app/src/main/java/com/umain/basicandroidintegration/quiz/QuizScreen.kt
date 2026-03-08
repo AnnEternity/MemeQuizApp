@@ -3,6 +3,7 @@ package com.umain.basicandroidintegration.quiz
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.umain.basicandroidintegration.R
 import com.umain.basicandroidintegration.quiz.data.image
 import com.umain.basicandroidintegration.quiz.data.questionImage
@@ -70,43 +75,52 @@ fun QuizScreen(
 
         is QuizViewState.Loaded -> {
             val question = currentUiState.question
-            Column(
-                modifier =
-                    Modifier
-                        .padding(horizontal = 32.dp)
-                        .statusBarsPadding()
-                        .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                BasicText(
-                    text = "${currentUiState.themeText} quiz",
-                    style = title1,
-                    autoSize = TextAutoSize.StepBased(),
-                    maxLines = 1,
-                )
-                BasicText(
-                    text = question.questionText,
-                    style = subtitle,
-                    autoSize = TextAutoSize.StepBased(maxFontSize = 52.sp),
-                    maxLines = 1,
-                )
-                Image(
-                    painter = painterResource(question.questionImage),
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(350.dp),
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                    Button(
-                        { viewModel.emit(QuizViewEvent.YesAnswer) },
-                        "yes",
-                        R.drawable.paw_icon,
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 32.dp)
+                            .statusBarsPadding()
+                            .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    BasicText(
+                        text = "${currentUiState.themeText} quiz",
+                        style = title1,
+                        autoSize = TextAutoSize.StepBased(),
+                        maxLines = 1,
                     )
-                    Button(
-                        { viewModel.emit(QuizViewEvent.NoAnswer) },
-                        "no",
-                        R.drawable.paw_icon_dark,
+                    BasicText(
+                        text = question.questionText,
+                        style = subtitle,
+                        autoSize = TextAutoSize.StepBased(maxFontSize = 52.sp),
+                        maxLines = 1,
+                    )
+                    Image(
+                        painter = painterResource(question.questionImage),
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(350.dp),
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+                        Button(
+                            { viewModel.emit(QuizViewEvent.YesAnswer) },
+                            "yes",
+                            R.drawable.paw_icon,
+                        )
+                        Button(
+                            { viewModel.emit(QuizViewEvent.NoAnswer) },
+                            "no",
+                            R.drawable.paw_icon_dark,
+                        )
+                    }
+                }
+                if (currentUiState.showConfetti) {
+                    ConfettiAnimation(
+                        onAnimationComplete = {
+                            viewModel.emit(QuizViewEvent.ConfettiAnimationComplete)
+                        },
                     )
                 }
             }
@@ -231,12 +245,14 @@ private fun NameInputDialog(
                 )
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = 8.dp,
-                        alignment = Alignment.CenterHorizontally,
-                    ),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    horizontalArrangement =
+                        Arrangement.spacedBy(
+                            space = 8.dp,
+                            alignment = Alignment.CenterHorizontally,
+                        ),
                 ) {
                     TextButton(
                         onClick = onDismiss,
@@ -270,4 +286,24 @@ private fun NameInputDialogPreview() {
             onSave = {},
         )
     }
+}
+
+@Composable
+private fun ConfettiAnimation(onAnimationComplete: () -> Unit) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.confetti))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1,
+        isPlaying = true,
+    )
+    LaunchedEffect(progress) {
+        if (progress == 1f) {
+            onAnimationComplete()
+        }
+    }
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = Modifier.fillMaxSize(),
+    )
 }
