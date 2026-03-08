@@ -65,6 +65,27 @@ class QuizViewModel(
             handleAnswer(isAnswerCorrect, emit)
         }
 
+        addEventHandler<QuizViewEvent.NameDialogSaveClick> { event, emit ->
+            dismissNameDialog(emit)
+
+            val newScore =
+                Score(
+                    score = rightAnswerCounter,
+                    quizTheme = theme,
+                    name = event.finalName,
+                )
+
+            leaderBoardStorage.save(newScore)
+        }
+
+        addEventHandler<QuizViewEvent.NameDialogInput> { event, emit ->
+            updateNameInput(emit, event.name)
+        }
+
+        addEventHandler<QuizViewEvent.NameDialogDismiss> { event, emit ->
+            dismissNameDialog(emit)
+        }
+
         addErrorHandler(
             RevolverDefaultErrorHandler(
                 QuizViewState.Error("Error message"),
@@ -72,7 +93,28 @@ class QuizViewModel(
         )
     }
 
-    private suspend fun handleAnswer(
+    private fun updateNameInput(
+        emit: Emitter<QuizViewState, RevolverEffect>,
+        nameInput: String,
+    ) {
+        val currentState = state.value
+        if (currentState !is QuizViewState.QuizEnd) {
+            return
+        }
+        val newState = currentState.copy(nameInput = nameInput)
+        emit.state(newState)
+    }
+
+    private fun dismissNameDialog(emit: Emitter<QuizViewState, RevolverEffect>) {
+        val currentState = state.value
+        if (currentState !is QuizViewState.QuizEnd) {
+            return
+        }
+        val newState = currentState.copy(nameDialogDisplayed = false)
+        emit.state(newState)
+    }
+
+    private fun handleAnswer(
         isAnswerCorrect: Boolean,
         emit: Emitter<QuizViewState, RevolverEffect>,
     ) {
@@ -81,15 +123,15 @@ class QuizViewModel(
         }
         if (index == listOfQuestions.lastIndex) {
             val result = listOfResultText[rightAnswerCounter]
-            val newScore =
-                Score(
-                    score = rightAnswerCounter,
-                    quizTheme = theme,
-                )
             emit.state(
-                QuizViewState.QuizEnd(result, rightAnswerCounter, listOfQuestions.size),
+                QuizViewState.QuizEnd(
+                    result = result,
+                    score = rightAnswerCounter,
+                    numberOfQuestions = listOfQuestions.size,
+                    nameDialogDisplayed = true,
+                    nameInput = "",
+                ),
             )
-            leaderBoardStorage.save(newScore)
         } else {
             val loadedState = state.value as QuizViewState.Loaded
             emit.state(

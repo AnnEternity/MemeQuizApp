@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Basic Android Integration</string>
     <string name="score">%1d/%1d</string>
+    <string name="name_input_dialog_header">Enter your name if you want to save the score</string>
+    <string name="name_input_dialog_dismiss">Dismiss</string>
+    <string name="name_input_dialog_save">Save</string>
 </resources>
