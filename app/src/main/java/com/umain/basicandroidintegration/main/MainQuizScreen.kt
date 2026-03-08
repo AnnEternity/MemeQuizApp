@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umain.basicandroidintegration.R
+import com.umain.basicandroidintegration.ui.theme.subtitle
 import com.umain.basicandroidintegration.ui.theme.text
 import com.umain.basicandroidintegration.ui.theme.title1
 
@@ -134,6 +135,15 @@ fun MainQuizScreen(
                         style = text,
                         modifier = Modifier.padding(8.dp),
                     )
+                    if (currentUiState.score.isEmpty()) {
+                        Text(
+                            modifier =
+                                Modifier
+                                    .padding(8.dp),
+                            text = "Be first to score!",
+                            style = subtitle,
+                        )
+                    }
                     LazyColumn(
                         modifier =
                             Modifier
