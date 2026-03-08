@@ -46,7 +46,7 @@ import com.umain.basicandroidintegration.ui.theme.title1
 fun MainQuizScreen(
     modifier: Modifier = Modifier,
     viewModel: MainQuizViewModel = viewModel(),
-    onNavigate: (QuizTheme) -> Unit
+    onNavigate: (QuizTheme) -> Unit,
 ) {
     // Local UI state that tracks ViewModel's current state
     val uiState by viewModel.state.collectAsStateWithLifecycle()
@@ -60,9 +60,10 @@ fun MainQuizScreen(
             Text(
                 text = currentUiState.errorMessage,
                 color = Color.Red,
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 10.dp, vertical = 100.dp)
+                modifier =
+                    modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 10.dp, vertical = 100.dp),
             )
         }
 
@@ -70,7 +71,7 @@ fun MainQuizScreen(
             Row(
                 modifier = modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
             ) {
                 CircularProgressIndicator()
             }
@@ -79,11 +80,12 @@ fun MainQuizScreen(
         // Main screen
         is MainQuizViewState.Loaded -> {
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .statusBarsPadding(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .statusBarsPadding(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 BasicText(
                     text = "Quiz.",
@@ -98,49 +100,52 @@ fun MainQuizScreen(
                     QuizTheme.entries.forEach {
                         Card(
                             onClick = {
-                                //onNavigate(it)
-                                      },
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .width(160.dp)
+                                onNavigate(it)
+                            },
+                            modifier =
+                                Modifier
+                                    .padding(8.dp)
+                                    .width(160.dp),
                         ) {
-                            Column() {
+                            Column {
                                 Image(
-                                    modifier = Modifier
-                                        .height(180.dp),
+                                    modifier =
+                                        Modifier
+                                            .height(180.dp),
                                     painter = painterResource(it.image),
                                     contentScale = ContentScale.Crop,
-                                    contentDescription = "${it.name} quiz image"
+                                    contentDescription = "${it.name} quiz image",
                                 )
                                 Text(
                                     text = it.name,
                                     style = text,
-                                    modifier = Modifier.padding(8.dp)
+                                    modifier = Modifier.padding(8.dp),
                                 )
                             }
                         }
                     }
                 }
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                 ) {
                     Text(
                         "Score",
                         style = text,
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(8.dp),
                     )
                     LazyColumn(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(
                             count = 5,
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
                                 Text(text = "name")
                                 Text(text = "game")
@@ -149,7 +154,6 @@ fun MainQuizScreen(
                         }
                     }
                 }
-
             }
         }
     }
@@ -160,27 +164,28 @@ fun MainQuizScreen(
 fun NameInputDialog(
     initialValue: String = "",
     onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     var name by remember { mutableStateOf(initialValue) }
 
     BasicAlertDialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
     ) {
         Surface(
             shape = MaterialTheme.shapes.large,
             tonalElevation = 6.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier.padding(24.dp),
             ) {
                 Text(
                     text = "Enter name",
-                    style = text
+                    style = text,
                 )
 
                 TextField(
@@ -188,12 +193,12 @@ fun NameInputDialog(
                     onValueChange = { name = it },
                     singleLine = true,
                     placeholder = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier.align(Alignment.End),
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("Cancel")
@@ -201,7 +206,7 @@ fun NameInputDialog(
 
                     TextButton(
                         onClick = { onConfirm(name) },
-                        enabled = name.isNotBlank()
+                        enabled = name.isNotBlank(),
                     ) {
                         Text("OK")
                     }
@@ -211,10 +216,10 @@ fun NameInputDialog(
     }
 }
 
-
 val QuizTheme.image: Int
-    get() = when (this) {
-        QuizTheme.Cats -> R.drawable.cat_quiz
-        QuizTheme.Dogs -> R.drawable.dog_quiz
-        //QuizTheme.Mixed -> R.drawable.mix_quiz
-    }
+    get() =
+        when (this) {
+            QuizTheme.Cats -> R.drawable.cat_quiz
+            QuizTheme.Dogs -> R.drawable.dog_quiz
+            // QuizTheme.Mixed -> R.drawable.mix_quiz
+        }
