@@ -11,12 +11,12 @@ import kotlinx.coroutines.launch
  * Basic implementation of RevolverViewModel capable of handling events,
  * managing errors, and emitting states.
  */
-class MainQuizViewModel(private val leaderBoardStorage: LeaderBoardStorage = LeaderBoardStorageImpl()) :
-    RevolverViewModel<MainQuizViewEvent, MainQuizViewState, RevolverEffect>(initialState = MainQuizViewState.Loading) {
-
+class MainQuizViewModel(
+    private val leaderBoardStorage: LeaderBoardStorage = LeaderBoardStorageImpl(),
+) : RevolverViewModel<MainQuizViewEvent, MainQuizViewState, RevolverEffect>(initialState = MainQuizViewState.Loading) {
     init {
         viewModelScope.launch {
-            leaderBoardStorage.scores.collect {scores ->
+            leaderBoardStorage.scores.collect { scores ->
                 emit(MainQuizViewEvent.ScoresRefreshed(scores))
             }
         }
@@ -26,7 +26,7 @@ class MainQuizViewModel(private val leaderBoardStorage: LeaderBoardStorage = Lea
                 MainQuizViewState.Loaded(
                     isButtonOn = false,
                     score = emptyList(),
-                )
+                ),
             )
         }
         addEventHandler<MainQuizViewEvent.ButtonOnClick> { event, emit ->
@@ -35,7 +35,7 @@ class MainQuizViewModel(private val leaderBoardStorage: LeaderBoardStorage = Lea
             emit.state(
                 loadedState.copy(
                     isButtonOn = isButtonOn,
-                )
+                ),
             )
         }
         addEventHandler<MainQuizViewEvent.ScoresRefreshed> { event, emit ->
@@ -43,8 +43,8 @@ class MainQuizViewModel(private val leaderBoardStorage: LeaderBoardStorage = Lea
             val loadedState = state.value as MainQuizViewState.Loaded
             emit.state(
                 loadedState.copy(
-                    score = score
-                )
+                    score = score,
+                ),
             )
         }
         /**
@@ -57,8 +57,8 @@ class MainQuizViewModel(private val leaderBoardStorage: LeaderBoardStorage = Lea
          */
         addErrorHandler(
             RevolverDefaultErrorHandler(
-                MainQuizViewState.Error("Error message")
-            )
+                MainQuizViewState.Error("Error message"),
+            ),
         )
     }
 }
