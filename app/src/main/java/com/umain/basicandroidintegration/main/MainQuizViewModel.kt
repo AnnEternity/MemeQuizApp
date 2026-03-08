@@ -5,6 +5,7 @@ import com.umain.basicandroidintegration.storage.LeaderBoardStorageImpl
 import com.umain.revolver.RevolverDefaultErrorHandler
 import com.umain.revolver.RevolverEffect
 import com.umain.revolver.RevolverViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -16,9 +17,18 @@ class MainQuizViewModel(
 ) : RevolverViewModel<MainQuizViewEvent, MainQuizViewState, RevolverEffect>(initialState = MainQuizViewState.Loading) {
     init {
         viewModelScope.launch {
-            leaderBoardStorage.scores.collect { scores ->
-                emit(MainQuizViewEvent.ScoresRefreshed(scores))
-            }
+            leaderBoardStorage.scores
+                .map { scores ->
+                    scores.sortedByDescending {
+                        if (it.maxPossible == 0) {
+                            0.0
+                        } else {
+                            it.score.toDouble() / it.maxPossible
+                        }
+                    }
+                }.collect { scores ->
+                    emit(MainQuizViewEvent.ScoresRefreshed(scores))
+                }
         }
 
         addEventHandler<MainQuizViewEvent.ViewReady> { event, emit ->

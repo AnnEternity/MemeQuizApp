@@ -73,6 +73,7 @@ class QuizViewModel(
                     score = rightAnswerCounter,
                     quizTheme = theme,
                     name = event.finalName,
+                    maxPossible = listOfQuestions.size,
                 )
 
             leaderBoardStorage.save(newScore)

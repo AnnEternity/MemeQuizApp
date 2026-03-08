@@ -13,7 +13,6 @@ class LeaderBoardStorageImpl : LeaderBoardStorage {
     override val scores: Flow<List<Score>>
         get() = db.collection(SCORES_COLLECTION).dataObjects()
 
-
     override suspend fun save(score: Score) {
         db.collection(SCORES_COLLECTION).add(score).await()
     }

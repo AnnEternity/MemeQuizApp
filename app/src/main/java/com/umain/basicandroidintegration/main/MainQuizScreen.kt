@@ -155,7 +155,7 @@ fun MainQuizScreen(
                                     maxLines = 1,
                                 )
                                 Text(text = it.quizTheme.toString())
-                                Text(text = it.score.toString())
+                                Text(text = "${it.score}/${it.maxPossible}")
                             }
                         }
                     }
