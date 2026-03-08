@@ -1,34 +1,28 @@
 package com.umain.basicandroidintegration.main
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,9 +76,12 @@ fun MainQuizScreen(
             Column(
                 modifier =
                     Modifier
-                        .padding(horizontal = 16.dp)
-                        .statusBarsPadding(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                        .padding(
+                            end = 16.dp,
+                            start = 16.dp,
+                            bottom = 16.dp,
+                        ).systemBarsPadding(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 BasicText(
@@ -95,7 +92,10 @@ fun MainQuizScreen(
                     overflow = TextOverflow.Clip,
                 )
                 FlowRow(
-                    modifier = Modifier,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     QuizTheme.entries.forEach {
                         Card(
@@ -104,7 +104,6 @@ fun MainQuizScreen(
                             },
                             modifier =
                                 Modifier
-                                    .padding(8.dp)
                                     .width(160.dp),
                         ) {
                             Column {
@@ -128,8 +127,7 @@ fun MainQuizScreen(
                 Card(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                            .fillMaxWidth(),
                 ) {
                     Text(
                         "Score",
@@ -137,78 +135,29 @@ fun MainQuizScreen(
                         modifier = Modifier.padding(8.dp),
                     )
                     LazyColumn(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 16.dp),
+                        contentPadding = PaddingValues(bottom = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(
-                            count = 5,
-                        ) {
+                        items(currentUiState.score) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                Text(text = "name")
-                                Text(text = "game")
-                                Text(text = "score")
+                                Text(
+                                    modifier =
+                                        Modifier
+                                            .width(120.dp)
+                                            .basicMarquee(),
+                                    text = it.name,
+                                    maxLines = 1,
+                                )
+                                Text(text = it.quizTheme.toString())
+                                Text(text = it.score.toString())
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NameInputDialog(
-    initialValue: String = "",
-    onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    var name by remember { mutableStateOf(initialValue) }
-
-    BasicAlertDialog(
-        onDismissRequest = onDismiss,
-    ) {
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = 6.dp,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(24.dp),
-            ) {
-                Text(
-                    text = "Enter name",
-                    style = text,
-                )
-
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    singleLine = true,
-                    placeholder = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.align(Alignment.End),
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
-
-                    TextButton(
-                        onClick = { onConfirm(name) },
-                        enabled = name.isNotBlank(),
-                    ) {
-                        Text("OK")
                     }
                 }
             }
