@@ -13,7 +13,7 @@ sealed class QuizViewState : RevolverState {
     data class Loaded(
         val question: QuizQuestion,
         val themeText: String,
-        val showConfetti: Boolean = false,
+        val showConfetti: Boolean = false
     ) : QuizViewState()
 
     data class QuizEnd(
@@ -22,9 +22,8 @@ sealed class QuizViewState : RevolverState {
         val numberOfQuestions: Int,
         val nameDialogDisplayed: Boolean,
         val nameInput: String,
+        val nameDialogTitle: String
     ) : QuizViewState()
 
-    data class Error(
-        val errorMessage: String,
-    ) : QuizViewState()
+    data class Error(val errorMessage: String) : QuizViewState()
 }

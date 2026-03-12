@@ -14,7 +14,6 @@ import com.umain.basicandroidintegration.quiz.QuizScreen
 import com.umain.basicandroidintegration.ui.theme.BasicAndroidIntegrationTheme
 import kotlinx.serialization.Serializable
 
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +30,9 @@ class MainActivity : ComponentActivity() {
 object MainQuizScreen
 
 @Serializable
-data class DetailScreen(val theme: QuizTheme)
+data class DetailScreen(
+    val theme: QuizTheme,
+)
 
 @Composable
 fun MainNavigation() {
@@ -44,12 +45,12 @@ fun MainNavigation() {
             MainQuizScreen(
                 onNavigate = {
                     navController.navigate(route = DetailScreen(it))
-                }
+                },
             )
         }
         composable<DetailScreen> {
             QuizScreen(
-                navigateToStart = {navController.popBackStack()}
+                navigateToStart = { navController.popBackStack() },
             )
         }
     }

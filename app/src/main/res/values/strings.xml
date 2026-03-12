@@ -1,7 +1,19 @@
 <resources>
     <string name="app_name">Basic Android Integration</string>
-    <string name="score">%1d/%1d</string>
-    <string name="name_input_dialog_header">Enter your name if you want to save the score</string>
+    <string name="be_first_to_score">Be first to score!</string>
+    <string name="cat_s_paw">Cat\'s paw</string>
     <string name="name_input_dialog_dismiss">Dismiss</string>
+    <string name="name_input_dialog_header">Enter your name if you want to save the score</string>
     <string name="name_input_dialog_save">Save</string>
+    <string name="no">no</string>
+    <string name="one_more_time">One more time?</string>
+    <string name="quiz_image">%1$s quiz image</string>
+    <string name="quiz_theme_title">%1$s quiz</string>
+    <string name="quiz_title">Quiz.</string>
+    <string name="score">%1d/%1d</string>
+    <string name="score_rate">%1$d/%2$d</string>
+    <string name="score_title">Score</string>
+    <string name="yes">yes</string>
+
+
 </resources>

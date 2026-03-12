@@ -7,7 +7,6 @@ import com.umain.revolver.RevolverState
  * MainViewState defines all possible states that the ViewModel can emit to the UI.
  */
 sealed class MainQuizViewState : RevolverState {
-
     /**
      * Initial loading state shown to the user while awaiting data from the ViewModel.
      * This could be a spinner, animation, or any visual indicator readily available in the
@@ -26,7 +25,7 @@ sealed class MainQuizViewState : RevolverState {
     data class Loaded(
         var isButtonOn: Boolean,
         var score: List<Score>,
-        ) : MainQuizViewState()
+    ) : MainQuizViewState()
 
     /**
      * In this example, all errors are handled within the ViewModel, and only this error state
@@ -38,6 +37,6 @@ sealed class MainQuizViewState : RevolverState {
      * and emit specific states that the UI can directly process without extra handling steps.
      */
     data class Error(
-        val errorMessage: String
+        val errorMessage: String,
     ) : MainQuizViewState()
 }

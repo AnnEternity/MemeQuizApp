@@ -19,29 +19,29 @@ import com.umain.revolver.RevolverDefaultErrorHandler
 import com.umain.revolver.RevolverEffect
 import com.umain.revolver.RevolverViewModel
 
-class QuizViewModel(
-    savedStateHandle: SavedStateHandle,
-) : RevolverViewModel<QuizViewEvent, QuizViewState, RevolverEffect>(
-        initialState = QuizViewState.Loading,
+class QuizViewModel(savedStateHandle: SavedStateHandle) :
+    RevolverViewModel<QuizViewEvent, QuizViewState, RevolverEffect>(
+        initialState = QuizViewState.Loading
     ) {
     private val leaderBoardStorage: LeaderBoardStorage = LeaderBoardStorageImpl()
-
     val route = savedStateHandle.toRoute<DetailScreen>()
     val theme = route.theme
     val listOfQuestions: List<QuizQuestion> =
         when (theme) {
             QuizTheme.Cats -> CatQuizQuestions.entries.toList()
             QuizTheme.Dogs -> DogQuizQuestions.entries.toList()
-            // QuizTheme.Mixed -> MixedQuizQuestions.entries.toList()
         }
     val listOfResultText: List<QuizResult> =
         when (theme) {
             QuizTheme.Cats -> CatQuizResult.entries.toList()
             QuizTheme.Dogs -> DogQuizResult.entries.toList()
-            // QuizTheme.Mixed -> MixedQuizResult.entries.toList()
         }
     var index: Int = 0
     var rightAnswerCounter = 0
+    val nameDialogTitles = listOf(
+        "Yay!", "Nice!", "Woohoo!", "Great job!", "You did it!", "Awesome!", "Congratulations!",
+        "Such skill!", "Wow, such score!", "Much wow!"
+    )
 
     init {
         addEventHandler<QuizViewEvent.ViewReady> { event, emit ->
@@ -50,8 +50,8 @@ class QuizViewModel(
             emit.state(
                 QuizViewState.Loaded(
                     listOfQuestions[index],
-                    theme.name,
-                ),
+                    theme.name
+                )
             )
         }
 
@@ -73,7 +73,7 @@ class QuizViewModel(
                     score = rightAnswerCounter,
                     quizTheme = theme,
                     name = event.finalName,
-                    maxPossible = listOfQuestions.size,
+                    maxPossible = listOfQuestions.size
                 )
 
             leaderBoardStorage.save(newScore)
@@ -93,15 +93,12 @@ class QuizViewModel(
 
         addErrorHandler(
             RevolverDefaultErrorHandler(
-                QuizViewState.Error("Error message"),
-            ),
+                QuizViewState.Error("Error message")
+            )
         )
     }
 
-    private fun updateNameInput(
-        emit: Emitter<QuizViewState, RevolverEffect>,
-        nameInput: String,
-    ) {
+    private fun updateNameInput(emit: Emitter<QuizViewState, RevolverEffect>, nameInput: String) {
         val currentState = state.value
         if (currentState !is QuizViewState.QuizEnd) {
             return
@@ -121,7 +118,7 @@ class QuizViewModel(
 
     private fun handleAnswer(
         isAnswerCorrect: Boolean,
-        emit: Emitter<QuizViewState, RevolverEffect>,
+        emit: Emitter<QuizViewState, RevolverEffect>
     ) {
         if (isAnswerCorrect) {
             ++rightAnswerCounter
@@ -142,15 +139,16 @@ class QuizViewModel(
                     numberOfQuestions = listOfQuestions.size,
                     nameDialogDisplayed = true,
                     nameInput = "",
-                ),
+                    nameDialogTitle = nameDialogTitles.random()
+                )
             )
         } else {
             val loadedState = state.value as QuizViewState.Loaded
             emit.state(
                 loadedState.copy(
                     question = listOfQuestions[++index],
-                    showConfetti = false,
-                ),
+                    showConfetti = false
+                )
             )
         }
     }
