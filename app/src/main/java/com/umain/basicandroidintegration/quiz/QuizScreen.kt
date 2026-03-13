@@ -139,12 +139,24 @@ fun QuizScreen(
                     Spacer(modifier = Modifier.padding(Dimens.medium))
                     Row(horizontalArrangement = Arrangement.spacedBy(Dimens.XXLarge)) {
                         AnswerButton(
-                            { viewModel.emit(QuizViewEvent.YesAnswer) },
+                            {
+                                if (!currentUiState.showConfetti) {
+                                    viewModel.emit(
+                                        QuizViewEvent.YesAnswer
+                                    )
+                                }
+                            },
                             R.drawable.paw_icon,
                             stringResource(R.string.yes)
                         )
                         AnswerButton(
-                            { viewModel.emit(QuizViewEvent.NoAnswer) },
+                            {
+                                if (!currentUiState.showConfetti) {
+                                    viewModel.emit(
+                                        QuizViewEvent.NoAnswer
+                                    )
+                                }
+                            },
                             R.drawable.paw_icon_dark,
                             stringResource(R.string.no)
                         )
