@@ -51,6 +51,11 @@ Layers:
 
 Scores are stored and observed via Firebase Firestore using Kotlin Flow, which allows the leaderboard to update reactively.
 
+## 📸 Screenshots
+
+<img src="Screenshots/main_quiz_screen.png" alt="Main quiz screen" width="200"/> <img src="Screenshots/quiz_screen.png" alt="Quiz screen" width="200"/> <img src="Screenshots/save_name_dialog.png" alt=" Save name screen" width="200"/> <img src="Screenshots/quiz_score.png" alt="Quiz score screen" width="200"/> 
+
+
 ## 🚀 Getting Started
 
 To run the application, please download the latest release from the Releases section.
