@@ -12,7 +12,7 @@ object Dimens {
     val XXLarge: Dp = 32.dp
     val textLarge: Dp = 120.dp
     val imageSmall: Dp = 100.dp
-    val imageWidth: Dp = 185.dp
+    val imageWidth: Dp = 165.dp
     val imageHeight: Dp = 220.dp
     val imageLarge: Dp = 350.dp
 }
